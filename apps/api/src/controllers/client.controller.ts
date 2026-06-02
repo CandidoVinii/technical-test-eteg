@@ -1,0 +1,22 @@
+import type { RequestHandler } from "express";
+import { createClient } from "../services/client.service.js";
+
+export const create: RequestHandler = async (req, res, next) => {
+  try {
+    const input = req.validatedBody!;
+    const client = await createClient(input);
+    res.status(201).json({
+      data: {
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        cpf: client.cpf,
+        color: client.color,
+        note: client.note,
+        createdAt: client.createdAt.toISOString(),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
