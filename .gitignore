@@ -1,0 +1,13 @@
+node_modules
+dist
+.turbo
+.env
+.env.local
+*.log
+.DS_Store
+
+# Documentação local (não versionar)
+*.md
+
+# Cursor / IDE
+.cursor
