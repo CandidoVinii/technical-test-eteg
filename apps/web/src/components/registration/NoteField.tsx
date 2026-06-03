@@ -21,8 +21,8 @@ export function NoteField() {
       <FieldTextarea
         id="note"
         name="note"
+        placeholder="Informações adicionais (opcional)"
         rows={3}
-        maxLength={500}
         disabled={submitting}
         value={getValue("note")}
         $error={hasError}
@@ -31,11 +31,7 @@ export function NoteField() {
         onChange={(e) => setValue("note", e.target.value)}
         onBlur={() => blur("note")}
       />
-      {!hasError && (
-        <FieldHint id="note-hint">
-          {noteLength} / 500
-        </FieldHint>
-      )}
+      <FieldHint id="note-hint">{noteLength} / 500</FieldHint>
       {hasError && (
         <FieldError id="note-error" role="alert">
           {error}

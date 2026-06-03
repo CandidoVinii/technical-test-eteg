@@ -44,10 +44,7 @@ export const Page = styled.main`
   min-height: 100dvh;
   align-items: flex-start;
   justify-content: center;
-  padding: max(16px, env(safe-area-inset-top))
-    max(16px, env(safe-area-inset-right))
-    max(24px, env(safe-area-inset-bottom))
-    max(16px, env(safe-area-inset-left));
+  padding: 16px 16px 24px;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
     align-items: center;
@@ -192,16 +189,16 @@ export const ToastStack = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  left: max(12px, env(safe-area-inset-left));
-  right: max(12px, env(safe-area-inset-right));
-  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-    top: max(16px, env(safe-area-inset-top));
-    right: max(16px, env(safe-area-inset-right));
+    top: 16px;
+    right: 16px;
     bottom: auto;
     left: auto;
-    max-width: min(360px, calc(100vw - 32px));
+    max-width: 360px;
   }
 `;
 
@@ -218,23 +215,18 @@ export const ToastBox = styled.div<{ $variant: ToastVariant }>`
 
 export const ColorGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   width: 100%;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 10px;
-    max-width: 320px;
+    grid-template-columns: repeat(7, 1fr);
   }
 `;
 
 export const ColorSwatch = styled.button<{ $hex: string; $on?: boolean }>`
   width: 100%;
   aspect-ratio: 1;
-  max-width: 44px;
-  max-height: 44px;
-  justify-self: center;
   padding: 0;
   border-radius: ${({ theme }) => theme.radius.sm};
   border: 2px solid
@@ -250,4 +242,99 @@ export const ColorSwatch = styled.button<{ $hex: string; $on?: boolean }>`
 export const ColorLegend = styled.span`
   font-size: ${({ theme }) => theme.fonts.sizeXs};
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const ColorPreview = styled.div<{ $empty?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid
+    ${({ theme, $empty }) =>
+      $empty ? theme.colors.border : theme.colors.borderFocus};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background: ${({ theme }) => theme.colors.bgCard};
+`;
+
+export const ColorPreviewSwatch = styled.div<{ $hex: string }>`
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background: ${({ $hex }) => $hex};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+`;
+
+export const ColorPreviewMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+`;
+
+export const ColorPreviewLabel = styled.span`
+  font-size: ${({ theme }) => theme.fonts.sizeSm};
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const ColorPreviewHex = styled.span`
+  font-size: ${({ theme }) => theme.fonts.sizeXs};
+  font-family: ui-monospace, monospace;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const ColorAddDetails = styled.details`
+  margin-top: 12px;
+
+  summary {
+    font-size: ${({ theme }) => theme.fonts.sizeXs};
+    color: ${({ theme }) => theme.colors.textSecondary};
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: "+ ";
+    }
+  }
+
+  &[open] summary::before {
+    content: "− ";
+  }
+`;
+
+export const ColorAddPanel = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 8px;
+`;
+
+export const ColorPickerRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+`;
+
+export const ColorPickerInput = styled.input.attrs({ type: "color" })`
+  width: 52px;
+  height: 44px;
+  padding: 2px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background: ${({ theme }) => theme.colors.bgCard};
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;

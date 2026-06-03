@@ -20,7 +20,6 @@ export function RegistrationForm() {
       <NameField />
       <EmailField />
       <CpfField />
-      <SectionLabel>Opcional</SectionLabel>
       <ColorPickerField />
       <NoteField />
       <SubmitButton />
