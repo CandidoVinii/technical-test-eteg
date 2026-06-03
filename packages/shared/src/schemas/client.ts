@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { CLIENT_COLOR_IDS } from "../constants/client-colors.js";
 import { stripCpf, validateCpf } from "../utils/cpf.js";
+import { colorResponseSchema } from "./color.js";
 
 export const createClientSchema = z.object({
   name: z
@@ -14,9 +14,7 @@ export const createClientSchema = z.object({
     .transform(stripCpf)
     .refine((v) => v.length === 11, "CPF deve ter 11 dígitos")
     .refine(validateCpf, "CPF inválido"),
-  color: z
-    .enum(CLIENT_COLOR_IDS, { message: "Selecione uma cor válida" })
-    .optional(),
+  colorId: z.coerce.number().int().positive("Selecione uma cor"),
   note: z
     .string()
     .trim()
@@ -28,11 +26,12 @@ export const createClientSchema = z.object({
 export type CreateClientInput = z.infer<typeof createClientSchema>;
 
 export const clientResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.number().int().positive(),
   name: z.string(),
   email: z.string(),
   cpf: z.string(),
-  color: z.string().nullable(),
+  colorId: z.number().int().positive(),
+  color: colorResponseSchema,
   note: z.string().nullable(),
   createdAt: z.string().datetime(),
 });
