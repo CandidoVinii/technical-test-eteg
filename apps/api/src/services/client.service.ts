@@ -11,12 +11,6 @@ export type ClientEntity = {
   colorId: number;
   note: string | null;
   createdAt: Date;
-  color: {
-    id: number;
-    label: string;
-    hex: string;
-    createdAt: Date;
-  };
 };
 
 export async function createClient(
@@ -36,9 +30,8 @@ export async function createClient(
         email: input.email,
         cpf: input.cpf,
         note: input.note ?? null,
-        color: { connect: { id: input.colorId } },
+        colorId: input.colorId,
       },
-      include: { color: true },
     });
   } catch (error) {
     if (isPrismaUniqueViolation(error, "cpf")) {

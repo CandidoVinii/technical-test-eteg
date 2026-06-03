@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { stripCpf, validateCpf } from "../utils/cpf.js";
-import { colorResponseSchema } from "./color.js";
 
 export const createClientSchema = z.object({
   name: z
@@ -31,7 +30,6 @@ export const clientResponseSchema = z.object({
   email: z.string(),
   cpf: z.string(),
   colorId: z.number().int().positive(),
-  color: colorResponseSchema,
   note: z.string().nullable(),
   createdAt: z.string().datetime(),
 });

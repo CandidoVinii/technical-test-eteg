@@ -232,15 +232,7 @@ export const openApiSpec = {
       },
       Client: {
         type: "object",
-        required: [
-          "id",
-          "name",
-          "email",
-          "cpf",
-          "colorId",
-          "color",
-          "createdAt",
-        ],
+        required: ["id", "name", "email", "cpf", "colorId", "createdAt"],
         properties: {
           id: { type: "integer", minimum: 1 },
           name: { type: "string" },
@@ -248,7 +240,6 @@ export const openApiSpec = {
           cpf: { type: "string" },
           colorId: { type: "integer", minimum: 1 },
           note: { type: "string", nullable: true },
-          color: { $ref: "#/components/schemas/Color" },
           createdAt: { type: "string", format: "date-time" },
         },
       },

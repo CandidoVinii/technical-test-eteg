@@ -14,12 +14,6 @@ export const create: RequestHandler = async (req, res, next) => {
         cpf: client.cpf,
         colorId: client.colorId,
         note: client.note,
-        color: {
-          id: client.color.id,
-          label: client.color.label,
-          hex: client.color.hex,
-          createdAt: client.color.createdAt.toISOString(),
-        },
         createdAt: client.createdAt.toISOString(),
       },
     });
