@@ -1,13 +1,15 @@
 node_modules
 dist
+apps/api/src/generated
 .turbo
 .env
 .env.local
 *.log
 .DS_Store
 
-# Documentação local (não versionar)
-*.md
-
+.docs/
 # Cursor / IDE
 .cursor
+
+
+
