@@ -23,6 +23,6 @@ COPY apps/web apps/web/
 RUN pnpm -F @repo/shared build && pnpm -F @repo/web build
 
 FROM nginx:alpine
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
-RUN printf '%s\n' 'server{listen 80;root /usr/share/nginx/html;location /{try_files $uri $uri/ /index.html;}}' > /etc/nginx/conf.d/default.conf
 EXPOSE 80

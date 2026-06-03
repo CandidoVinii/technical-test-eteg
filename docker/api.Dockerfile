@@ -8,6 +8,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/typescript-config/package.json packages/typescript-config/
 COPY apps/api/package.json apps/api/
+COPY apps/api/prisma apps/api/prisma
 
 RUN pnpm i -F @repo/api... --frozen-lockfile
 
