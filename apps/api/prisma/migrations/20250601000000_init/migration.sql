@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "Client" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "cpf" VARCHAR(11) NOT NULL,
