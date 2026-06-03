@@ -1,30 +1,44 @@
 import type { CreateClientInput } from "@repo/shared";
-import { CpfConflictError } from "../errors/app-error.js";
+import { CpfConflictError, ColorNotFoundError } from "../errors/app-error.js";
 import { prisma } from "../utils/prisma.js";
 import { isPrismaUniqueViolation } from "../utils/prisma-errors.js";
 
 export type ClientEntity = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   cpf: string;
-  color: string | null;
+  colorId: number;
   note: string | null;
   createdAt: Date;
+  color: {
+    id: number;
+    label: string;
+    hex: string;
+    createdAt: Date;
+  };
 };
 
 export async function createClient(
   input: CreateClientInput,
 ): Promise<ClientEntity> {
+  const color = await prisma.color.findUnique({
+    where: { id: input.colorId },
+  });
+  if (!color) {
+    throw new ColorNotFoundError();
+  }
+
   try {
     return await prisma.client.create({
       data: {
         name: input.name,
         email: input.email,
         cpf: input.cpf,
-        color: input.color ?? null,
         note: input.note ?? null,
+        color: { connect: { id: input.colorId } },
       },
+      include: { color: true },
     });
   } catch (error) {
     if (isPrismaUniqueViolation(error, "cpf")) {

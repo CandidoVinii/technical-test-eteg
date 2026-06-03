@@ -16,6 +16,18 @@ export class CpfConflictError extends AppError {
   }
 }
 
+export class ColorConflictError extends AppError {
+  constructor() {
+    super(409, "COLOR_ALREADY_EXISTS", "Já existe uma cor com este hex");
+  }
+}
+
+export class ColorNotFoundError extends AppError {
+  constructor() {
+    super(400, "COLOR_NOT_FOUND", "Cor não encontrada");
+  }
+}
+
 export class UnauthorizedError extends AppError {
   constructor(message = "Não autorizado") {
     super(401, "UNAUTHORIZED", message);
