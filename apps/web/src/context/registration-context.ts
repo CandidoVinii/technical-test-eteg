@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { ClientColorId } from "@repo/shared";
+import type { ColorResponse } from "@repo/shared";
 
 export type FormFieldKey = "name" | "email" | "cpf" | "color" | "note";
 
@@ -14,14 +14,16 @@ export type ToastState = {
 export type RegistrationContextValue = {
   submitting: boolean;
   toast: ToastState | null;
+  colors: ColorResponse[];
+  colorsLoading: boolean;
   submitForm: () => void;
   getValue: (field: FormFieldKey) => string;
   setValue: (field: FormFieldKey, value: string) => void;
   blur: (field: FormFieldKey) => void;
   getError: (field: FormFieldKey) => string | undefined;
-  selectColor: (colorId: ClientColorId) => void;
-  clearColor: () => void;
-  selectedColorId: ClientColorId | null;
+  selectColor: (colorId: string) => void;
+  selectedColorId: string | null;
+  createColor: (label: string, hex: string) => Promise<boolean>;
   noteLength: number;
 };
 

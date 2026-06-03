@@ -6,8 +6,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { formatCpfMask, isClientColorId, type ClientColorId } from "@repo/shared";
+import { createColorSchema, formatCpfMask } from "@repo/shared";
 import { ToastView } from "../components/registration/ToastView";
+import { getColors, postColor } from "../services/color-api";
 import { postClient } from "../services/client-api";
 import {
   CLIENT_VALIDATION_TOAST,
@@ -31,6 +32,7 @@ import {
   type FieldErrors,
   type FormFields,
 } from "./registration-form";
+import type { ColorResponse } from "@repo/shared";
 
 const TOAST_DISMISS_MS = 4500;
 
@@ -42,6 +44,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   );
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [colors, setColors] = useState<ColorResponse[]>([]);
+  const [colorsLoading, setColorsLoading] = useState(true);
   const toastSeq = useRef(0);
 
   const notify = useCallback((message: ToastMessage) => {
@@ -68,6 +72,26 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [toast?.id]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await getColors();
+      if (cancelled) return;
+      if (result.ok) {
+        setColors(result.data);
+      } else {
+        notify({
+          variant: "error",
+          message: "Não foi possível carregar as cores.",
+        });
+      }
+      setColorsLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [notify]);
+
   const clearFieldError = useCallback((key: FormFieldKey) => {
     setFieldErrors((prev) => {
       if (!prev[key]) return prev;
@@ -88,7 +112,12 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       clearFieldError(key);
       return;
     }
-    const issue = result.error.errors.find((e) => e.path[0] === key);
+    const issue = result.error.errors.find((e) => {
+      const path = e.path[0];
+      if (path === key) return true;
+      if (key === "color" && path === "colorId") return true;
+      return false;
+    });
     if (issue) {
       setFieldErrors((prev) => ({ ...prev, [key]: issue.message }));
     } else {
@@ -132,7 +161,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     [fieldErrors],
   );
 
-  const selectColor = useCallback((colorId: ClientColorId) => {
+  const selectColor = useCallback((colorId: string) => {
     setFields((prev) => ({ ...prev, color: colorId }));
     setTouched((prev) => ({ ...prev, color: true }));
     setFieldErrors((prev) => {
@@ -142,14 +171,34 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const clearColor = useCallback(() => {
-    setFields((prev) => ({ ...prev, color: "" }));
-  }, []);
+  const selectedColorId = fields.color || null;
 
-  const selectedColorId = useMemo((): ClientColorId | null => {
-    const id = fields.color;
-    return isClientColorId(id) ? id : null;
-  }, [fields.color]);
+  const createColor = useCallback(
+    async (label: string, hex: string): Promise<boolean> => {
+      const parsed = createColorSchema.safeParse({ label, hex });
+      if (!parsed.success) {
+        notify({
+          variant: "warning",
+          message: parsed.error.errors[0]?.message ?? "Dados da cor inválidos.",
+        });
+        return false;
+      }
+
+      const result = await postColor(parsed.data);
+      if (!result.ok) {
+        notify(resolveApiToast(result.status, result.error.code));
+        return false;
+      }
+
+      setColors((prev) =>
+        [...prev, result.data].sort((a, b) => a.label.localeCompare(b.label)),
+      );
+      selectColor(String(result.data.id));
+      notify({ variant: "success", message: `Cor "${result.data.label}" criada.` });
+      return true;
+    },
+    [notify, selectColor],
+  );
 
   const submitForm = useCallback(async () => {
     setToast(null);
@@ -193,6 +242,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     () => ({
       submitting,
       toast,
+      colors,
+      colorsLoading,
       submitForm: () => {
         void submitForm();
       },
@@ -201,21 +252,23 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       blur,
       getError,
       selectColor,
-      clearColor,
       selectedColorId,
+      createColor,
       noteLength: fields.note.length,
     }),
     [
       submitting,
       toast,
+      colors,
+      colorsLoading,
       submitForm,
       getValue,
       setValue,
       blur,
       getError,
       selectColor,
-      clearColor,
       selectedColorId,
+      createColor,
       fields.note.length,
     ],
   );

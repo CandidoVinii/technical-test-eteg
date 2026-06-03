@@ -1,6 +1,5 @@
 import {
   createClientSchema,
-  isClientColorId,
   stripCpf,
   type ApiErrorBody,
   type CreateClientInput,
@@ -25,7 +24,6 @@ export function emptyFields(): FormFields {
   return { name: "", email: "", cpf: "", color: "", note: "" };
 }
 
-/** Campo com algo digitado — vazio + blur não dispara erro. */
 export function hasFieldContent(field: FormFieldKey, value: string): boolean {
   if (field === "cpf") return stripCpf(value).length > 0;
   return value.trim().length > 0;
@@ -36,8 +34,10 @@ export function zodIssuesToFieldErrors(
 ): FieldErrors {
   const errors: FieldErrors = {};
   for (const issue of issues) {
-    const key = issue.path[0];
-    if (typeof key === "string" && FIELD_KEYS.has(key) && !errors[key as FormFieldKey]) {
+    const raw = issue.path[0];
+    if (typeof raw !== "string") continue;
+    const key = raw === "colorId" ? "color" : raw;
+    if (FIELD_KEYS.has(key) && !errors[key as FormFieldKey]) {
       errors[key as FormFieldKey] = issue.message;
     }
   }
@@ -45,13 +45,11 @@ export function zodIssuesToFieldErrors(
 }
 
 export function buildPayload(fields: FormFields): CreateClientInput {
-  const color =
-    fields.color && isClientColorId(fields.color) ? fields.color : undefined;
   return {
     name: fields.name,
     email: fields.email,
     cpf: stripCpf(fields.cpf),
-    color,
+    colorId: Number(fields.color),
     note: fields.note.trim() || undefined,
   };
 }
@@ -66,6 +64,9 @@ export function fieldErrorsFromApi(error: ApiErrorBody): FieldErrors {
   }
   if (error.code === "CPF_ALREADY_REGISTERED") {
     return { cpf: "Este CPF já possui cadastro." };
+  }
+  if (error.code === "COLOR_NOT_FOUND") {
+    return { color: "Selecione uma cor válida." };
   }
   return {};
 }

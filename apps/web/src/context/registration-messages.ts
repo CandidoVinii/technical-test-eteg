@@ -15,6 +15,10 @@ const BY_CODE: Record<string, ToastMessage> = {
     variant: "warning",
     message: "Este CPF já possui cadastro.",
   },
+  COLOR_ALREADY_EXISTS: {
+    variant: "warning",
+    message: "Já existe uma cor com este hex.",
+  },
   NETWORK_ERROR: {
     variant: "error",
     message: "Verifique sua conexão e tente novamente.",
